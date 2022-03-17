@@ -30,7 +30,7 @@ instance.prototype.init = function () {
 	self.nodes = []
 	self.currentChannel = ''
 	self.accessToken = ''
-	
+
 	self.setupVariables()
 	self.getAccessToken()
 	self.getNodes()
@@ -72,7 +72,8 @@ instance.prototype.config_fields = function () {
 			id: 'info',
 			width: 12,
 			label: 'Information',
-			value: 'This module is for the Adder XDIP Receiver. Add a new module connection for each receiver in your system. The Receiver Access Password is required to change channels.',
+			value:
+				'This module is for the Adder XDIP Receiver. Add a new module connection for each receiver in your system. The Receiver Access Password is required to change channels.',
 		},
 		{
 			type: 'textinput',
@@ -150,7 +151,7 @@ instance.prototype.action = function (action) {
 				self.switchChannel(cmd)
 				self.getCurrentChannel()
 			} else {
-				self.log('warn','Unable to find channel number for ' + opt.channelUuid)
+				self.log('warn', 'Unable to find channel number for ' + opt.channelUuid)
 			}
 			break
 		}
@@ -189,7 +190,7 @@ instance.prototype.switchChannel = function (cmd) {
 
 	if (self.accessToken == '') {
 		console.log('missing access token')
-		self.log('warn','Unable to switch channel, missing access token')
+		self.log('warn', 'Unable to switch channel, missing access token')
 		return
 	}
 
@@ -213,13 +214,14 @@ instance.prototype.switchChannel = function (cmd) {
 				self.status(self.STATUS_OK)
 			} else {
 				console.log('error ' + result.response.statusCode)
-				self.log('warn','Unable to switch to channel')
+				self.log('warn', 'Unable to switch to channel')
 			}
 		},
 		header,
-		{ connection: {
-			rejectUnauthorized: false,
-			}
+		{
+			connection: {
+				rejectUnauthorized: false,
+			},
 		}
 	)
 }
@@ -262,9 +264,10 @@ instance.prototype.getChannels = function () {
 			}
 		},
 		header,
-		{ connection: {
-			rejectUnauthorized: false,
-			}
+		{
+			connection: {
+				rejectUnauthorized: false,
+			},
 		}
 	)
 }
@@ -278,7 +281,7 @@ instance.prototype.getNodes = function () {
 	var header = []
 	header['Content-Type'] = 'application/json'
 	console.log(cmd)
-	
+
 	self.system.emit(
 		'rest_get',
 		cmd,
@@ -297,7 +300,7 @@ instance.prototype.getNodes = function () {
 						if (name.length == 0) {
 							name = 'Name not set! ' + i
 						}
-						description =  result.data[i].description.trim()
+						description = result.data[i].description.trim()
 						// console.log(uuid)
 						//if (uuid != 'self') {
 						self.nodes.splice(i, 0, {
@@ -316,9 +319,10 @@ instance.prototype.getNodes = function () {
 			}
 		},
 		header,
-		{ connection: {
-			rejectUnauthorized: false,
-			}
+		{
+			connection: {
+				rejectUnauthorized: false,
+			},
 		}
 	)
 }
@@ -363,9 +367,10 @@ instance.prototype.getCurrentChannel = function () {
 			}
 		},
 		header,
-		{ connection: {
-			rejectUnauthorized: false,
-			}
+		{
+			connection: {
+				rejectUnauthorized: false,
+			},
 		}
 	)
 }
@@ -373,7 +378,7 @@ instance.prototype.getCurrentChannel = function () {
 instance.prototype.getAccessToken = function (cmd) {
 	var self = this
 	var header = []
-	header['Content-Type'] = 'application/json'	
+	header['Content-Type'] = 'application/json'
 
 	try {
 		authData = JSON.parse('{"accessPassword":"' + self.config.password.toString() + '"}')
@@ -387,7 +392,7 @@ instance.prototype.getAccessToken = function (cmd) {
 	console.log(cmd)
 
 	self.system.emit(
-		'rest', 
+		'rest',
 		cmd,
 		authData,
 		function (err, result) {
@@ -402,7 +407,7 @@ instance.prototype.getAccessToken = function (cmd) {
 						self.accessToken = result.data.accessToken.toString()
 						console.log(self.accessToken)
 						self.setVariable('tokenStatus', 'Valid')
-						self.log('debug','Access Token received')
+						self.log('debug', 'Access Token received')
 					}
 				}
 			} else {
@@ -413,9 +418,10 @@ instance.prototype.getAccessToken = function (cmd) {
 			}
 		},
 		header,
-		{ connection: {
-			rejectUnauthorized: false,
-			}
+		{
+			connection: {
+				rejectUnauthorized: false,
+			},
 		}
 	)
 }
@@ -425,7 +431,7 @@ instance.prototype.lookupChannel = function (lookupUuid) {
 	console.log('Lookup channel for: ' + lookupUuid)
 
 	try {
-		let obj = self.channels.find(o => o.uuid == lookupUuid)
+		let obj = self.channels.find((o) => o.uuid == lookupUuid)
 		console.log(lookupUuid + ' is channel ' + obj.channel)
 		return obj.channel
 	} catch (e) {
@@ -445,7 +451,7 @@ instance.prototype.lookupName = function (lookupCh) {
 	}
 
 	try {
-		let obj = self.channels.find(o => o.channel == lookupCh)
+		let obj = self.channels.find((o) => o.channel == lookupCh)
 		uuid = obj.uuid
 		console.log('Lookup uuid for channel: ' + lookupCh + ' = ' + uuid)
 	} catch (e) {
@@ -454,7 +460,7 @@ instance.prototype.lookupName = function (lookupCh) {
 	}
 
 	try {
-		let obj = self.nodes.find(p => p.id == uuid)
+		let obj = self.nodes.find((p) => p.id == uuid)
 		name = obj.label
 		console.log('Lookup name for channel: ' + lookupCh + ' = ' + name)
 	} catch (e) {
@@ -467,4 +473,3 @@ instance.prototype.lookupName = function (lookupCh) {
 
 instance_skel.extendedBy(instance)
 exports = module.exports = instance
-
