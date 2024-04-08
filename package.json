@@ -1,31 +1,21 @@
 {
 	"name": "adder-xdip",
-	"version": "1.0.0",
-	"api_version": "1.0.0",
-	"keywords": [
-		"IP KVM",
-		"KVM Matrix",
-		"KVM Extender",
-		"Remote Control"
-	],
-	"manufacturer": "Adder",
-	"product": [
-		"XDIP"
-	],
-	"shortname": "XDIP",
-	"description": "Companion module for Adder XDIP Receiver",
+	"version": "2.0.0",
 	"main": "index.js",
+	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"author": "Peter Daniel",
-	"license": "MIT",
-	"homepage": "https://github.com/bitfocus/companion-module-adder-xdip#readme",
-	"bugs": {
-		"url": "https://github.com/bitfocus/companion-module-adder-xdip/issues"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bitfocus/companion-module-adder-xdip.git"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"@companion-module/base": "~1.5.0",
+		"got": "~13.0.0"
+	},
+	"devDependencies": {
+		"@companion-module/tools": "~1.4.0"
 	}
 }
