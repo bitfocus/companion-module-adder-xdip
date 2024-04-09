@@ -74,6 +74,8 @@ class XDIP extends InstanceBase {
 			},
 		}
 
+		// console.log(this.gotOptions)
+
 		this.updateVariables()
 		this.updateActions()
 		this.getAccessToken().then(this.getNodes()).then(this.getChannels()).then(this.getCurrentChannel())
@@ -83,7 +85,11 @@ class XDIP extends InstanceBase {
 		console.log('configUpdated')
 
 		this.config = config
-		console.log(this.config)
+		this.gotOptions.prefixUrl = 'https://' + this.config.ipAddress + ':' + this.config.port
+
+		// console.log(this.gotOptions)
+		// console.log(this.config)
+
 		this.updateVariables()
 		this.getAccessToken().then(this.getNodes()).then(this.getChannels()).then(this.getCurrentChannel())
 	}
