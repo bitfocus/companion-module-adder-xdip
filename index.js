@@ -14,7 +14,6 @@ class XDIP extends InstanceBase {
 	}
 
 	getConfigFields() {
-
 		return [
 			{
 				type: 'static-text',
@@ -162,7 +161,7 @@ class XDIP extends InstanceBase {
 				if (typeof body === 'object') {
 					if (body.accessToken.length > 0) {
 						this.accessToken = body.accessToken
-						this.log('info','Access token received')
+						this.log('info', 'Access token received')
 						this.setVariableValues({
 							tokenStatus: 'Valid!',
 						})
