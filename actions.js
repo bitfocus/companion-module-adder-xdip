@@ -1,4 +1,5 @@
 export function updateActions() {
+	console.log('updateActions')
 	let actions = {}
 
 	actions['switchChannel'] = {
@@ -20,7 +21,7 @@ export function updateActions() {
 
 	actions['disconnectReceiver'] = {
 		name: 'Disconnect Receiver',
-		callback: ({}) => {
+		callback: (action) => {
 			this.log('info', 'Disconnecting receiver')
 			this.switchChannel('2147483647') // 0x7fffffff
 		},
@@ -28,21 +29,21 @@ export function updateActions() {
 
 	actions['getChannels'] = {
 		name: 'Refresh Channel List',
-		callback: ({}) => {
+		callback: (action) => {
 			this.getNodes().then(this.getChannels())
 		},
 	}
 
 	actions['getConnectedChannel'] = {
 		name: 'Get Connected Channel',
-		callback: ({}) => {
+		callback: (action) => {
 			this.getCurrentChannel()
 		},
 	}
 
 	actions['getAccessToken'] = {
 		name: 'Refresh Access Token',
-		callback: ({}) => {
+		callback: (action) => {
 			this.getAccessToken()
 		},
 	}
