@@ -14,7 +14,7 @@ class XDIP extends InstanceBase {
 	}
 
 	getConfigFields() {
-		console.log('config fields')
+
 		return [
 			{
 				type: 'static-text',
@@ -30,6 +30,7 @@ class XDIP extends InstanceBase {
 				label: 'Receiver IP Address',
 				width: 6,
 				regex: Regex.IP,
+				required: true,
 			},
 			{
 				type: 'textinput',
@@ -38,6 +39,7 @@ class XDIP extends InstanceBase {
 				width: 6,
 				default: '8443',
 				regex: Regex.Port,
+				required: true,
 			},
 			{
 				type: 'textinput',
@@ -74,8 +76,8 @@ class XDIP extends InstanceBase {
 		}
 
 		this.updateVariables()
-		this.getAccessToken().then(this.getNodes()).then(this.getChannels())
 		this.updateActions()
+		this.getAccessToken().then(this.getNodes()).then(this.getChannels()).then(this.getCurrentChannel())
 	}
 
 	async configUpdated(config) {
@@ -84,8 +86,7 @@ class XDIP extends InstanceBase {
 		this.config = config
 		console.log(this.config)
 		this.updateVariables()
-		this.getAccessToken()
-		this.updateActions()
+		this.getAccessToken().then(this.getNodes()).then(this.getChannels()).then(this.getCurrentChannel())
 	}
 
 	async gotGet(cmd) {
@@ -108,11 +109,11 @@ class XDIP extends InstanceBase {
 			return null
 		}
 	}
-	
+
 	async gotPost(cmd, postOptions) {
 		try {
 			var response = await got.post(cmd, postOptions)
-		
+
 			if (response.statusCode == 200 || response.statusCode == 204) {
 				this.updateStatus(InstanceStatus.Ok)
 				this.processResult(response)
@@ -132,7 +133,6 @@ class XDIP extends InstanceBase {
 	}
 
 	processResult(response) {
-		console.log(response.statusCode)
 		switch (response.statusCode) {
 			case 200:
 				// console.log('success')
@@ -145,7 +145,6 @@ class XDIP extends InstanceBase {
 				this.getCurrentChannel()
 				break
 			default:
-				console.log('unexpected http response code')
 				this.updateStatus(InstanceStatus.UnknownError, `Unexpected HTTP status code: ${response.statusCode}`)
 				this.log('warn', `Unexpected HTTP status code: ${response.statusCode} - ${response.body.error}`)
 				this.currentChannel = null
@@ -155,16 +154,21 @@ class XDIP extends InstanceBase {
 
 	processData(pathname, body) {
 		console.log('process: ' + pathname)
-		console.log(body)
-		console.log(typeof body + ' length: ' + body.length)
+		// console.log(body)
+		// console.log(typeof body + ' length: ' + body.length)
 
 		switch (pathname) {
 			case '/api/nodes/self/access':
-				this.accessToken = body.accessToken
-				this.setVariableValues({
-					tokenStatus: 'Valid!',
-				})
-				console.log(this.accessToken)
+				if (typeof body === 'object') {
+					if (body.accessToken.length > 0) {
+						this.accessToken = body.accessToken
+						this.log('info','Access token received')
+						this.setVariableValues({
+							tokenStatus: 'Valid!',
+						})
+						// console.log(this.accessToken)
+					}
+				}
 				break
 			case '/api/nodes/selected':
 				if (typeof body === 'object' && body != null) {
@@ -174,14 +178,12 @@ class XDIP extends InstanceBase {
 					var description
 
 					for (var i = 0; i < body.length; i++) {
-						// console.log(body[i])
 						uuid = body[i].uuid
 						name = body[i].name.trim()
 						if (name.length == 0) {
 							name = 'Name not set! ' + i
 						}
 						description = body[i].description.trim()
-						// console.log(uuid)
 						//if (uuid != 'self') {
 						this.nodes.splice(i, 0, {
 							id: uuid,
@@ -210,7 +212,6 @@ class XDIP extends InstanceBase {
 				if (typeof body === 'object' && body != null) {
 					if ('id' in body) {
 						this.currentChannel = body.id
-						console.log('Connected to channel ' + this.currentChannel)
 						this.setVariableValues({
 							channelName: this.lookupName(this.currentChannel),
 							channelId: this.currentChannel,
@@ -242,7 +243,7 @@ class XDIP extends InstanceBase {
 		// POST /channels/{id}/switch
 
 		var switchChannel = this.lookupChannel(channelUuid)
-		console.log(switchChannel)
+		// console.log(switchChannel)
 		if (switchChannel != null) {
 			var cmd = 'api/channels/' + switchChannel + '/switch'
 			this.log('info', 'Switching to channel ' + switchChannel)
@@ -252,19 +253,17 @@ class XDIP extends InstanceBase {
 		}
 
 		console.log(cmd)
-		console.log(this.accessToken)
+		// console.log(this.accessToken)
 
 		if (this.accessToken == '') {
-			console.log('missing access token')
 			this.log('warn', 'Unable to switch channel, missing access token')
 			return
 		}
 
 		this.gotOptions.headers.Authorization = 'Bearer ' + this.accessToken
-		console.log(this.gotOptions)
-		
+		// console.log(this.gotOptions)
+
 		this.gotPost(cmd, this.gotOptions)
-		
 	}
 
 	async getChannels() {
@@ -296,27 +295,26 @@ class XDIP extends InstanceBase {
 		}
 
 		// console.log(this.gotOptions)
-		console.log(authData)
-		console.log(getURL)
+		// console.log(authData)
+		// console.log(getURL)
 
 		var tokenOptions = { ...this.gotOptions }
 		tokenOptions.body = authData
 
 		// console.log(tokenOptions)
 		// console.log(this.gotOptions)
-		
-		this.gotPost(getURL, tokenOptions)
 
+		this.gotPost(getURL, tokenOptions)
 	}
 
 	lookupChannel(lookupUuid) {
 		console.log('Lookup channel for: ' + lookupUuid)
-		
+
 		if (lookupUuid == '2147483647') {
 			// disconnect 0x7fffffff
 			return '2147483647'
 		}
-		
+
 		try {
 			let obj = this.channels.find((o) => o.uuid == lookupUuid)
 			console.log(lookupUuid + ' is channel ' + obj.channel)
