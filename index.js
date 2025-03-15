@@ -1,8 +1,8 @@
 // Adder XDIP v2
 
 import { InstanceBase, InstanceStatus, Regex, runEntrypoint, TCPHelper } from '@companion-module/base'
-import { updateActions } from './actions.js'
-import { updateVariables } from './variables.js'
+import { updateActions } from './src/actions.js'
+import { updateVariables } from './src/variables.js'
 import got, { Options } from 'got'
 
 class XDIP extends InstanceBase {
@@ -103,7 +103,7 @@ class XDIP extends InstanceBase {
 			} else {
 				this.updateStatus(
 					InstanceStatus.UnknownError,
-					`Unexpected HTTP status code: ${response.statusCode} - ${response.body.error}`
+					`Unexpected HTTP status code: ${response.statusCode} - ${response.body.error}`,
 				)
 				this.log('warn', `Unexpected HTTP status code: ${response.statusCode} - ${response.body.error}`)
 				return null
@@ -125,7 +125,7 @@ class XDIP extends InstanceBase {
 			} else {
 				this.updateStatus(
 					InstanceStatus.UnknownError,
-					`Unexpected HTTP status code: ${response.statusCode} - ${response.body.error}`
+					`Unexpected HTTP status code: ${response.statusCode} - ${response.body.error}`,
 				)
 				this.log('warn', `Unexpected HTTP status code: ${response.statusCode} - ${response.body.error}`)
 				return null
@@ -159,8 +159,8 @@ class XDIP extends InstanceBase {
 
 	processData(pathname, body) {
 		console.log('process: ' + pathname)
-		// console.log(body)
-		// console.log(typeof body + ' length: ' + body.length)
+		console.log(body)
+		console.log(typeof body + ' length: ' + body.length)
 
 		switch (pathname) {
 			case '/api/nodes/self/access':
@@ -231,6 +231,8 @@ class XDIP extends InstanceBase {
 			default:
 				break
 		}
+
+		self.checkFeedbacks()
 	}
 
 	processError(error) {
@@ -299,15 +301,15 @@ class XDIP extends InstanceBase {
 			return
 		}
 
-		// console.log(this.gotOptions)
-		// console.log(authData)
-		// console.log(getURL)
+		console.log(this.gotOptions)
+		console.log(authData)
+		console.log(getURL)
 
 		var tokenOptions = { ...this.gotOptions }
 		tokenOptions.body = authData
 
-		// console.log(tokenOptions)
-		// console.log(this.gotOptions)
+		console.log(tokenOptions)
+		console.log(this.gotOptions)
 
 		this.gotPost(getURL, tokenOptions)
 	}

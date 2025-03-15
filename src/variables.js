@@ -13,7 +13,7 @@ export function updateVariables() {
 		{
 			name: 'Access token state',
 			variableId: 'tokenStatus',
-		}
+		},
 	)
 
 	this.setVariableDefinitions(variables)
