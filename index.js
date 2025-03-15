@@ -2,6 +2,7 @@
 
 import { InstanceBase, InstanceStatus, Regex, runEntrypoint, TCPHelper } from '@companion-module/base'
 import { updateActions } from './src/actions.js'
+import { updateFeedbacks } from './src/feedbacks.js'
 import { updateVariables } from './src/variables.js'
 import got, { Options } from 'got'
 
@@ -78,6 +79,7 @@ class XDIP extends InstanceBase {
 
 		this.updateVariables()
 		this.updateActions()
+		this.updateFeedbacks()
 		this.getAccessToken().then(this.getNodes()).then(this.getChannels()).then(this.getCurrentChannel())
 	}
 
