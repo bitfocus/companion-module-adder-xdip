@@ -1,10 +1,10 @@
-# Companion Module Adder XDIP
+# Adder XDIP
 
 This module allows you to control an [Adder XDIP](https://www.adder.com/en/kvm-solutions/adderlink-xdip) receiver on your local network.
 
 ## Receiver Setup
 
-Before receivers can be controlled by Companion, the ‘Enable Remote Control’ option must be checked within the Advanced page of each receiver’s configuration. The XDIP unit must have firmware version v1.05 or above. _Note:_ XDIP firmware version v1.06 has a bug which prevents the 'Enable Remote Control' option from being saved.
+Before receivers can be controlled by Companion, the ‘Enable Remote Control’ option must be checked within the Advanced page of each Receiver’s configuration. The XDIP unit must have firmware version v1.05 or above. _Note:_ XDIP firmware version v1.06 has a bug which prevents the 'Enable Remote Control' option from being saved.
 
 ## Module Setup
 
@@ -28,11 +28,15 @@ The following actions are possible.
 
 A few variables are available. Variables will only update on connection or when an action is performed. There is no polling so if a channel is changed using the interface on the XDIP Companion variables will be out of date until 'Get Connected Channel' action is used.
 
-**Connected channel id** The number of the channel that the receiver is switched to. These numbers are the same as those shown on the XDIP device menu.
+**Connected Channel Id** The number of the channel that the receiver is switched to. These numbers are the same as those shown on the XDIP device menu.
 
-**Connected channel name** The name of the channel that the receiver is switched to.
+**Connected Channel Name** The name of the channel that the receiver is switched to.
 
-**Access token state** This variable will show 'Valid' if an access token has been successfully acquired. An access token is required to switch channels.
+**Access Token State** This variable will show 'Valid' if an access token has been successfully acquired. An access token is required to switch channels.
+
+**Receiver Name** The name of the Receiver.
+
+**Receiver Description** The description of the Receiver.
 
 ## Versions
 
@@ -43,3 +47,7 @@ First release
 ### 2.0.0
 
 Rewrite for Companion 3
+
+### 3.0.0
+
+Conversion to TypeScript, add feedbacks
