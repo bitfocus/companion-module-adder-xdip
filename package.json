@@ -21,7 +21,7 @@
 		"undici": "^7.18.2"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.1.1",
+		"@companion-module/tools": "^2.6.1",
 		"@types/node": "^22.10.2",
 		"husky": "^9.1.7",
 		"lint-staged": "^15.2.11",
