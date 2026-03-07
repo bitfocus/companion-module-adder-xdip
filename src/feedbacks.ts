@@ -23,14 +23,14 @@ export function UpdateFeedbacks(self: XDIPInstance): void {
 			bgcolor: combineRgb(255, 0, 0),
 		},
 		callback: async function (feedback) {
-			let channel = feedback.options.channelUuid
-			let currentChannel = self.currentChannel
+			const channel = feedback.options.channelUuid
+			const currentChannel = self.currentChannel
 
 			//find the uuid in self.channels using channel
-			let currentChannelObj = self.channels.find((element) => element.channel === currentChannel)
+			const currentChannelObj = self.channels.find((element) => element.channel === currentChannel)
 
 			if (currentChannelObj) {
-				let currentChannelUUID = currentChannelObj.uuid
+				const currentChannelUUID = currentChannelObj.uuid
 
 				self.log('debug', 'Current channel: ' + currentChannel)
 				self.log('debug', 'Feedback channel: ' + channel)

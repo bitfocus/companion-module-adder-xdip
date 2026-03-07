@@ -20,7 +20,7 @@ export function UpdateActions(self: XDIPInstance): void {
 			const options = action.options
 			self.log('debug', String(options.channelUuid))
 			if (options.channelUuid) {
-				SwitchChannel(self, String(options.channelUuid))
+				void SwitchChannel(self, String(options.channelUuid))
 			} else {
 				self.log('warn', 'Channel UUID is undefined')
 			}
@@ -32,7 +32,7 @@ export function UpdateActions(self: XDIPInstance): void {
 		options: [],
 		callback: () => {
 			self.log('info', 'Disconnecting Receiver.')
-			SwitchChannel(self, '2147483647') // 0x7fffffff
+			void SwitchChannel(self, '2147483647') // 0x7fffffff
 		},
 	}
 
@@ -40,7 +40,7 @@ export function UpdateActions(self: XDIPInstance): void {
 		name: 'Refresh Channel List',
 		options: [],
 		callback: () => {
-			GetNodes(self).then(() => GetChannels(self))
+			void GetNodes(self).then(async () => GetChannels(self))
 		},
 	}
 
@@ -48,7 +48,7 @@ export function UpdateActions(self: XDIPInstance): void {
 		name: 'Get Connected Channel',
 		options: [],
 		callback: () => {
-			GetCurrentChannel(self)
+			void GetCurrentChannel(self)
 		},
 	}
 
@@ -56,7 +56,7 @@ export function UpdateActions(self: XDIPInstance): void {
 		name: 'Refresh Access Token',
 		options: [],
 		callback: () => {
-			GetAccessToken(self)
+			void GetAccessToken(self)
 		},
 	}
 

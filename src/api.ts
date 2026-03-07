@@ -9,7 +9,7 @@ export async function InitConnection(self: XDIPInstance): Promise<void> {
 
 	await GetAccessToken(self)
 	await Promise.all([GetNodes(self), GetChannels(self), GetCurrentChannel(self)])
-	StartPolling(self)
+	void StartPolling(self)
 }
 
 export async function GetAccessToken(self: XDIPInstance): Promise<void> {
@@ -17,9 +17,9 @@ export async function GetAccessToken(self: XDIPInstance): Promise<void> {
 		self.log('debug', `Getting Access Token...`)
 	}
 
-	let authData = { accessPassword: self.config.password }
+	const authData = { accessPassword: self.config.password }
 	try {
-		let response = await FetchRequest(self, 'api/nodes/self/access', { body: authData })
+		const response = await FetchRequest(self, 'api/nodes/self/access', { body: authData })
 		if (response && response.accessToken) {
 			self.accessToken = response.accessToken
 			self.log('info', 'Access token received')
@@ -57,26 +57,26 @@ export async function SwitchChannel(self: XDIPInstance, channelUuid: string): Pr
 		self.log('debug', `Switching Channel...`)
 	}
 
-	let switchChannel = LookupChannel(self, channelUuid)
+	const switchChannel = LookupChannel(self, channelUuid)
 	if (switchChannel != null) {
-		let cmd = `api/channels/${switchChannel}/switch`
+		const cmd = `api/channels/${switchChannel}/switch`
 		self.log('info', `Switching to Channel ${switchChannel}`)
-		FetchRequest(self, cmd, { body: {} })
+		void FetchRequest(self, cmd, { body: {} })
 	} else {
 		self.log('warn', `Unable to find channel number for ${channelUuid}`)
 	}
 }
 
 async function FetchRequest(self: XDIPInstance, cmd: string, postOptions?: { body: object }): Promise<any> {
-	let isPost = postOptions !== undefined
-	let url = `https://${self.config.ipAddress}:${self.config.port}/${cmd}`
+	const isPost = postOptions !== undefined
+	const url = `https://${self.config.ipAddress}:${self.config.port}/${cmd}`
 
 	if (self.config.verbose) {
 		self.log('debug', `Fetching URL: ${url}`)
 	}
 
 	try {
-		let response = await fetch(url, {
+		const response = await fetch(url, {
 			method: isPost ? 'POST' : 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -86,9 +86,9 @@ async function FetchRequest(self: XDIPInstance, cmd: string, postOptions?: { bod
 			dispatcher: new Agent({ connect: { rejectUnauthorized: false } }), // 👈 Proper way to bypass SSL verification
 		})
 
-		let data = response.status !== 204 ? await response.json() : {}
+		const data = response.status !== 204 ? await response.json() : {}
 		if (!response.ok) {
-			self.log('debug', String(response))
+			self.log('debug', `Response not OK: status ${response.status} ${response.statusText}`)
 		} else {
 			self.updateStatus(InstanceStatus.Ok)
 			ProcessResult(self, { statusCode: response.status, body: data, requestUrl: { pathname: cmd } })
@@ -111,7 +111,7 @@ async function StartPolling(self: XDIPInstance): Promise<void> {
 		}
 		self.log('info', `Polling enabled, interval: ${self.config.pollingInterval}ms`)
 		self.pollingInterval = setInterval(() => {
-			GetCurrentChannel(self)
+			void GetCurrentChannel(self)
 		}, self.config.pollingInterval)
 	}
 }
@@ -127,12 +127,12 @@ function LookupChannel(self: XDIPInstance, lookupUuid: string): string | null {
 	}
 
 	try {
-		let obj = self.channels.find((o) => o.uuid == lookupUuid)
+		const obj = self.channels.find((o) => o.uuid == lookupUuid)
 		if (self.config.verbose) {
 			self.log('debug', `${lookupUuid} is Channel: ${obj.channel}`)
 		}
 		return obj.channel
-	} catch (e) {
+	} catch (_e) {
 		if (self.config.verbose) {
 			self.log('debug', `Unable to find channel for: ${lookupUuid}`)
 		}
@@ -150,12 +150,12 @@ function LookupName(self: XDIPInstance, lookupCh: string): string | null {
 	}
 
 	try {
-		let obj = self.channels.find((o) => o.channel == lookupCh)
+		const obj = self.channels.find((o) => o.channel == lookupCh)
 		uuid = obj.uuid
 		if (self.config.verbose) {
 			self.log('debug', `Lookup uuid for channel: ${lookupCh} = ${uuid}`)
 		}
-	} catch (e) {
+	} catch (_e) {
 		if (self.config.verbose) {
 			self.log('debug', `Unable to find uuid for channel: ${lookupCh}`)
 		}
@@ -163,12 +163,12 @@ function LookupName(self: XDIPInstance, lookupCh: string): string | null {
 	}
 
 	try {
-		let obj = self.nodes.find((p) => p.id == uuid)
+		const obj = self.nodes.find((p) => p.id == uuid)
 		name = obj.label
 		if (self.config.verbose) {
 			self.log('debug', `Lookup name for uuid: ${uuid} = ${name}`)
 		}
-	} catch (e) {
+	} catch (_e) {
 		if (self.config.verbose) {
 			self.log('debug', `Unable to find name for uuid: ${uuid}`)
 		}
@@ -192,14 +192,14 @@ function ProcessResult(self: XDIPInstance, response: any): void {
 				ProcessData(self, response.requestUrl.pathname, response.body)
 			}
 			if (response.statusCode === 204 && self.config.enablePolling !== true) {
-				GetCurrentChannel(self)
+				void GetCurrentChannel(self)
 			}
 			break
 		default:
 			self.updateStatus(InstanceStatus.UnknownError, `Unexpected HTTP status code: ${response.statusCode}`)
 			self.log('warn', `Unexpected HTTP status code: ${response.statusCode}`)
 			self.currentChannel = null
-			self.log('debug', response)
+			self.log('debug', JSON.stringify(response))
 	}
 }
 
@@ -223,13 +223,13 @@ function ProcessData(self: XDIPInstance, pathname: string, body: any): void {
 				self.nodes = []
 
 				for (let i = 0; i < body.length; i++) {
-					let uuid = body[i].uuid
+					const uuid = body[i].uuid
 					let name = body[i].name.trim()
 					if (name.length == 0) {
 						name = 'Name not set! ' + i
 					}
-					let description = body[i].description.trim()
-					let type = body[i].type
+					const description = body[i].description.trim()
+					const type = body[i].type
 					if (type == 'transmitter' || uuid === 'self') {
 						if (uuid == 'self') {
 							self.nodes.splice(i, 0, {
