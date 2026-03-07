@@ -18,7 +18,7 @@ export function UpdateActions(self: XDIPInstance): void {
 		],
 		callback: (action) => {
 			const options = action.options
-			console.log(options.channelUuid)
+			self.log('debug', String(options.channelUuid))
 			if (options.channelUuid) {
 				SwitchChannel(self, String(options.channelUuid))
 			} else {

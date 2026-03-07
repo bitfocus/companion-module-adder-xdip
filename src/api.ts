@@ -23,7 +23,7 @@ export async function GetAccessToken(self: XDIPInstance): Promise<void> {
 		if (response && response.accessToken) {
 			self.accessToken = response.accessToken
 			self.log('info', 'Access token received')
-			console.log(response)
+			self.log('debug', response)
 			self.setVariableValues({ tokenStatus: 'Valid' })
 		}
 	} catch (error: any) {
@@ -88,14 +88,14 @@ async function FetchRequest(self: XDIPInstance, cmd: string, postOptions?: { bod
 
 		let data = response.status !== 204 ? await response.json() : {}
 		if (!response.ok) {
-			console.log(response)
+			self.log('debug', String(response))
 		} else {
 			self.updateStatus(InstanceStatus.Ok)
 			ProcessResult(self, { statusCode: response.status, body: data, requestUrl: { pathname: cmd } })
 			return data
 		}
 	} catch (error) {
-		console.log(error)
+		self.log('debug', String(error))
 		ProcessError(self, error)
 		return null
 	}
@@ -199,7 +199,7 @@ function ProcessResult(self: XDIPInstance, response: any): void {
 			self.updateStatus(InstanceStatus.UnknownError, `Unexpected HTTP status code: ${response.statusCode}`)
 			self.log('warn', `Unexpected HTTP status code: ${response.statusCode}`)
 			self.currentChannel = null
-			console.log(response)
+			self.log('debug', response)
 	}
 }
 
@@ -267,7 +267,7 @@ function ProcessData(self: XDIPInstance, pathname: string, body: any): void {
 			if (typeof body === 'object' && body != null) {
 				self.channels = []
 				for (let i = 0; i < body.length; i++) {
-					// console.log(result.data[i])
+					// self.log('debug',result.data[i])
 					self.channels.splice(i, 0, {
 						channel: body[i].id,
 						uuid: body[i].nodes[0].nodeUuid,

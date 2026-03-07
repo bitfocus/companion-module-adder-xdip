@@ -32,9 +32,9 @@ export function UpdateFeedbacks(self: XDIPInstance): void {
 			if (currentChannelObj) {
 				let currentChannelUUID = currentChannelObj.uuid
 
-				console.log('Current channel: ' + currentChannel)
-				console.log('Feedback channel: ' + channel)
-				console.log('Current channel UUID: ' + currentChannelUUID)
+				self.log('debug', 'Current channel: ' + currentChannel)
+				self.log('debug', 'Feedback channel: ' + channel)
+				self.log('debug', 'Current channel UUID: ' + currentChannelUUID)
 
 				if (currentChannelUUID === channel) {
 					return true
