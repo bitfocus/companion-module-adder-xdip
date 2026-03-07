@@ -230,25 +230,29 @@ function ProcessData(self: XDIPInstance, pathname: string, body: any): void {
 					}
 					let description = body[i].description.trim()
 					let type = body[i].type
-					if (type == 'transmitter') {
-						self.nodes.splice(i, 0, {
-							id: uuid,
-							label: name + ' (' + description + ')',
-						})
-					}
-
-					//now sort the array
-					self.nodes.sort((a, b) => {
-						return a.label.localeCompare(b.label)
-					})
-
-					if (uuid === 'self') {
-						self.setVariableValues({
-							receiverName: name,
-							receiverDescription: description,
-						})
+					if (type == 'transmitter' || uuid === 'self') {
+						if (uuid == 'self') {
+							self.nodes.splice(i, 0, {
+								id: uuid,
+								label: 'Local Console',
+							})
+							self.setVariableValues({
+								receiverName: name,
+								receiverDescription: description,
+							})
+						} else {
+							self.nodes.splice(i, 0, {
+								id: uuid,
+								label: name + ' (' + description + ')',
+							})
+						}
 					}
 				}
+
+				//now sort the array, making sure the local device is first in the list
+				self.nodes.sort((a, b) => {
+					return a.id === 'self' ? -1 : a.label.localeCompare(b.label)
+				})
 
 				self.nodes.splice(0, 0, {
 					id: '0',
